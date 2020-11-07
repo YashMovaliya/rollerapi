@@ -27,9 +27,31 @@ func (h *coasterHandlers) get(w http.ResponseWriter, r *http.Request) {
 
 	jsonBytes, err := json.Marshal(coasters)
 	if err != nil {
-
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 	}
+	w.Header().Add("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	w.Write(jsonBytes)
+}
+
+func (h *coasterHandlers) coasters(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		h.get(w, r)
+		return
+	case "POST":
+		h.post(w, r)
+		return
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Method not allowed"))
+		return
+	}
+}
+
+func (h *coasterHandlers) post(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func newCoasterHandlers() *coasterHandlers {
